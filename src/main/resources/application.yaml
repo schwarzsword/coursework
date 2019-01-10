@@ -27,3 +27,5 @@ security:
 
 server:
   port: 10880
+
+log

@@ -21,4 +21,13 @@ public class DealEntity {
     @OneToOne
     @JoinColumn(name = "payment", referencedColumnName = "id", nullable = false)
     private PaymentEntity paymentByPayment;
+
+    protected DealEntity() {
+    }
+
+    public DealEntity(EndDateEntity endDateEntity, UsersEntity usersByCustomer, PaymentEntity paymentEntity) {
+        this.endDateBySoldDate = endDateEntity;
+        this.usersByCustomer = usersByCustomer;
+        this.paymentByPayment = paymentEntity;
+    }
 }

@@ -42,17 +42,8 @@ public class LotsServiceImpl implements LotsService {
 
     @Override
     public List<LotEntity> findAvailableLots() {
-        return endDateRepository.findAllByStateIsTrue()
-                .stream()
-                .map(
-                        EndDateEntity::getLotByLot
-                )
-                .filter(
-                        lotEntity -> lotEntity
-                                .getState()
-                                .equals("on market")
-                )
-                .collect(Collectors.toList());
+
+        return lotRepository.findAllByState("on market");
     }
 
     @Override

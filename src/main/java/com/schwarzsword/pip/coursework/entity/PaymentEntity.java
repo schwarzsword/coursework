@@ -24,4 +24,12 @@ public class PaymentEntity {
     @ManyToOne
     @JoinColumn(name = "destination", referencedColumnName = "id", nullable = false)
     private WalletEntity walletByDestination;
+
+    protected PaymentEntity(){}
+
+    public PaymentEntity(Long sum, WalletEntity walletBySource, WalletEntity walletByDestination){
+        this.sum=sum;
+        this.walletBySource=walletBySource;
+        this.walletByDestination=walletByDestination;
+    }
 }

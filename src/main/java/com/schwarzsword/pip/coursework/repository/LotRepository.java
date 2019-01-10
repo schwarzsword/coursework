@@ -6,4 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface LotRepository extends CrudRepository<LotEntity, Integer> {
+    List<LotEntity> findAllByState(String state);
 }
