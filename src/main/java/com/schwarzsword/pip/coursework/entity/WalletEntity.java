@@ -1,0 +1,35 @@
+package com.schwarzsword.pip.coursework.entity;
+
+import lombok.Data;
+
+import javax.persistence.*;
+import java.util.Collection;
+
+@Data
+@Entity
+@Table(name = "wallet", schema = "public", catalog = "s243884")
+public class WalletEntity {
+    @Id
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @Basic
+    @Column(name = "balance", nullable = false)
+    private Long balance;
+    @OneToMany(mappedBy = "walletBySource")
+    private Collection<PaymentEntity> paymentsById;
+    @OneToMany(mappedBy = "walletByDestination")
+    private Collection<PaymentEntity> paymentsById_0;
+    @OneToOne
+    @JoinColumn(name = "owner", referencedColumnName = "id", nullable = false)
+    private UsersEntity usersByOwner;
+
+    protected WalletEntity() {
+    }
+
+    public WalletEntity(UsersEntity usersEntity) {
+        this.usersByOwner = usersEntity;
+        this.balance = 0L;
+    }
+
+}

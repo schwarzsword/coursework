@@ -1,0 +1,72 @@
+package com.schwarzsword.pip.coursework.serviceimpl;
+
+import com.schwarzsword.pip.coursework.entity.RolesEntity;
+import com.schwarzsword.pip.coursework.entity.UsersEntity;
+import com.schwarzsword.pip.coursework.entity.WalletEntity;
+import com.schwarzsword.pip.coursework.repository.UsersRepository;
+import com.schwarzsword.pip.coursework.repository.WalletRepository;
+import com.schwarzsword.pip.coursework.service.RegistrationService;
+import com.sun.deploy.security.UserDeclinedException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.oauth2.common.exceptions.UserDeniedAuthorizationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service("registrationService")
+public class RegistrationServiceImpl implements RegistrationService {
+    private final
+    UsersRepository usersRepository;
+
+    private final
+    WalletRepository walletRepository;
+
+    private String salt = BCrypt.gensalt();
+
+    @Autowired
+    public RegistrationServiceImpl(WalletRepository walletRepository, UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
+        this.walletRepository = walletRepository;
+    }
+
+    @Override
+    public UsersEntity signIn(String username, String password)
+            throws UserDeniedAuthorizationException {
+        UsersEntity usersEntity = getUserByUsername(username);
+        List<String> rolesList = usersEntity.getRoles()
+                .stream()
+                .map(RolesEntity::getRole)
+                .collect(Collectors.toList());
+        if (BCrypt.checkpw(password, usersEntity.getPassword())) {
+            if (rolesList.contains("BANNED")) throw new UserDeniedAuthorizationException("Пользователь забанен");
+                return usersEntity;
+        } else throw new UserDeniedAuthorizationException("Неверное имя пользователя или пароль");
+    }
+
+    @Transactional
+    @Override
+    public UsersEntity signUp(String name, String surname, String username, String password, String mail, String phone)
+            throws UserDeclinedException {
+        if (!usersRepository.existsByUsernameOrPhoneOrMail(username, phone, mail)) {
+            String pwd = BCrypt.hashpw(password, salt);
+            UsersEntity user = new UsersEntity(name, surname, username, pwd, mail, phone);
+            usersRepository.save(user);
+            WalletEntity walletEntity = new WalletEntity(user);
+            walletRepository.save(walletEntity);
+            return user;
+        } else throw new UserDeclinedException("Данный пользователь уже существует");
+    }
+
+    @Override
+    public UsersEntity getUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<UsersEntity> optionalUsersEntity = usersRepository.findByUsername(username);
+        if (optionalUsersEntity.isPresent()) {
+            return optionalUsersEntity.get();
+        } else throw new UsernameNotFoundException("Пользователь с данным именем не найден");
+    }
+}

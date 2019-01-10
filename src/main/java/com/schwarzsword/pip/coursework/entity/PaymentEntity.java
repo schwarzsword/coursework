@@ -1,0 +1,27 @@
+package com.schwarzsword.pip.coursework.entity;
+
+import lombok.Data;
+
+import javax.persistence.*;
+import java.util.Collection;
+
+@Data
+@Entity
+@Table(name = "payment", schema = "public", catalog = "s243884")
+public class PaymentEntity {
+    @Id
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @Basic
+    @Column(name = "sum", nullable = false)
+    private Long sum;
+    @OneToOne(mappedBy = "paymentByPayment")
+    private DealEntity dealById;
+    @ManyToOne
+    @JoinColumn(name = "source", referencedColumnName = "id", nullable = false)
+    private WalletEntity walletBySource;
+    @ManyToOne
+    @JoinColumn(name = "destination", referencedColumnName = "id", nullable = false)
+    private WalletEntity walletByDestination;
+}
