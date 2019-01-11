@@ -32,18 +32,19 @@ create table painting (
 
 create table wallet (
   id      serial primary key,
-  owner   integer unique             not null check (owner > 0) references users (id),
-  balance bigint check (balance > 0) not null
+  owner   integer unique              not null check (owner > 0) references users (id),
+  balance bigint check (balance > -1) not null
 );
 
 create table lot (
   id          serial primary key,
   painting    integer check (painting > 0) references painting (id)                                     not null,
   start_date  timestamp,
-  state       varchar(20)                                                                               not null,
+  state       varchar(50)                                                                               not null,
   start_price bigint check (start_price > 0)                                                            not null,
   seller      integer check (seller > 0) references users (id)                                          not null,
-  last_bet      integer check (seller > 0) references users (id)                                          not null
+  last_bet    integer check (seller > 0) references users (id),
+  policy      integer check (policy > 0 and policy < 8)
 );
 
 create table end_date (
@@ -80,4 +81,13 @@ create table users_roles (
   username integer references users (id) not null,
   role     integer references roles (id) not null
 );
+
+insert into roles (id, role)
+values (1, 'USER');
+insert into roles (id, role)
+values (2, 'ADMIN');
+insert into roles (id, role)
+values (3, 'EXPERT');
+insert into roles (id, role)
+values (4, 'BANNED');
 

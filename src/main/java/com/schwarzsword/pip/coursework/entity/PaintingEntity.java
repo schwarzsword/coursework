@@ -1,9 +1,11 @@
 package com.schwarzsword.pip.coursework.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @Entity
@@ -31,6 +33,7 @@ public class PaintingEntity {
     @Basic
     @Column(name = "technique", nullable = false, length = 30)
     private String technique;
+    @JsonIgnore
     @OneToMany(mappedBy = "paintingByPainting")
     private Collection<LotEntity> lotsById;
     @ManyToOne

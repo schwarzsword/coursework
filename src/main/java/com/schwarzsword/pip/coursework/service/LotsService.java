@@ -1,6 +1,8 @@
 package com.schwarzsword.pip.coursework.service;
 
 import com.schwarzsword.pip.coursework.entity.LotEntity;
+import com.schwarzsword.pip.coursework.entity.PaintingEntity;
+import com.schwarzsword.pip.coursework.entity.UsersEntity;
 import com.schwarzsword.pip.coursework.exceptions.IllegalCertificateException;
 
 import java.util.List;
@@ -9,21 +11,21 @@ import java.util.NoSuchElementException;
 public interface LotsService {
     List<LotEntity> findAvailableLots();
 
-    LotEntity findLotById(String id) throws NoSuchElementException;
+    LotEntity findLotById(String lotId) throws NoSuchElementException;
 
-    List<LotEntity> findOwnedLotsByCustomersUsername(String username);
+    List<LotEntity> findOwnedLotsByCustomersUser(UsersEntity user);
 
-    List<LotEntity> findSelledLotsBySellersUsername(String username);
+    List<LotEntity> findSelledLotsBySellersUser(UsersEntity user);
 
-    List<LotEntity> findSellingLotsBySellersUsername(String username);
+    List<LotEntity> findSellingLotsBySellersUser(UsersEntity user);
 
-    LotEntity addLot(Integer paintingId, Long startPrice, String username) throws IllegalCertificateException;
+    LotEntity addLot(PaintingEntity paintingEntity, Long startPrice, UsersEntity user, Integer policy) throws IllegalCertificateException;
 
-    List<LotEntity> findSimilarByTechnique(String lotId) throws NoSuchElementException;
+    List<LotEntity> findSimilarByTechnique(LotEntity lot);
 
-    List<LotEntity> findSimilarByGenre(String lotId) throws NoSuchElementException;
+    List<LotEntity> findSimilarByGenre(LotEntity lot) ;
 
-    List<LotEntity> findSimilarByAuthor(String lotId) throws NoSuchElementException;
+    List<LotEntity> findSimilarByAuthor(LotEntity lot);
 
     List<LotEntity> findForExpert();
 }

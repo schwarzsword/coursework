@@ -1,10 +1,10 @@
 package com.schwarzsword.pip.coursework.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Collection;
 
 @Data
 @Entity
@@ -20,6 +20,7 @@ public class EndDateEntity {
     @Basic
     @Column(name = "state", nullable = false)
     private Boolean state;
+    @JsonIgnore
     @OneToOne(mappedBy = "endDateBySoldDate")
     private DealEntity dealById;
     @OneToOne

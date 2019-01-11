@@ -1,9 +1,6 @@
 package com.schwarzsword.pip.coursework.serviceimpl;
 
-import com.schwarzsword.pip.coursework.entity.DealEntity;
-import com.schwarzsword.pip.coursework.entity.EndDateEntity;
-import com.schwarzsword.pip.coursework.entity.LotEntity;
-import com.schwarzsword.pip.coursework.entity.PaintingEntity;
+import com.schwarzsword.pip.coursework.entity.*;
 import com.schwarzsword.pip.coursework.exceptions.IllegalCertificateException;
 import com.schwarzsword.pip.coursework.repository.EndDateRepository;
 import com.schwarzsword.pip.coursework.repository.LotRepository;
@@ -14,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -57,8 +55,8 @@ public class LotsServiceImpl implements LotsService {
     }
 
     @Override
-    public List<LotEntity> findOwnedLotsByCustomersUsername(String username) {
-        return registrationService.getUserByUsername(username).getDealsById()
+    public List<LotEntity> findOwnedLotsByCustomersUser(UsersEntity user) {
+        return user.getDealsById()
                 .stream()
                 .map(
                         DealEntity::getEndDateBySoldDate)
@@ -69,8 +67,8 @@ public class LotsServiceImpl implements LotsService {
     }
 
     @Override
-    public List<LotEntity> findSelledLotsBySellersUsername(String username) {
-        return registrationService.getUserByUsername(username).getLotsById().stream().filter(
+    public List<LotEntity> findSelledLotsBySellersUser(UsersEntity user) {
+        return user.getLotsById().stream().filter(
                 lotEntity -> lotEntity
                         .getState()
                         .equals("sold"))
@@ -79,8 +77,8 @@ public class LotsServiceImpl implements LotsService {
     }
 
     @Override
-    public List<LotEntity> findSellingLotsBySellersUsername(String username) {
-        return registrationService.getUserByUsername(username).getLotsById().stream().filter(
+    public List<LotEntity> findSellingLotsBySellersUser(UsersEntity user) {
+        return user.getLotsById().stream().filter(
                 lotEntity -> lotEntity
                         .getState()
                         .equals("on market"))
@@ -90,8 +88,7 @@ public class LotsServiceImpl implements LotsService {
 
     @Transactional
     @Override
-    public LotEntity addLot(Integer paintingId, Long startPrice, String username) throws IllegalCertificateException {
-        PaintingEntity painting = paintingRepository.findById(paintingId).get();
+    public LotEntity addLot(PaintingEntity painting, Long startPrice, UsersEntity user, Integer policy) throws IllegalCertificateException {
         findAvailableLots()
                 .stream()
                 .map(LotEntity::getPaintingByPainting)
@@ -100,86 +97,77 @@ public class LotsServiceImpl implements LotsService {
                             .equals(painting.getCertificateByCertificate()))
                         throw new IllegalCertificateException("Лот с данным сертификатом уже выставлен");
                 });
-        LotEntity lot = new LotEntity(painting, startPrice, registrationService.getUserByUsername(username));
+        LotEntity lot = new LotEntity(painting, startPrice, user, policy);
         if (painting.getCertificateByCertificate() == null) {
             lot.setState("on expert verification");
         }
-        paintingRepository.save(painting);
         lotRepository.save(lot);
-        endDateRepository.save(new EndDateEntity(lot));
+        EndDateEntity endDateEntity = new EndDateEntity(lot);
+        paintingRepository.save(painting);
+        endDateRepository.save(endDateEntity);
+        lot.setEndDateById(endDateEntity);
+        if (user.getLotsById() != null) {
+            List<LotEntity> lotEntities = new ArrayList<>(user.getLotsById());
+            lotEntities.add(lot);
+            user.setLotsById(lotEntities);
+        } else {
+            ArrayList<LotEntity> list = new ArrayList<>();
+            list.add(lot);
+            user.setLotsById(list);
+        }
         return lot;
     }
 
     @Override
-    public List<LotEntity> findSimilarByTechnique(String lotId) throws NoSuchElementException {
-        String tech;
-        Optional<LotEntity> optionalLotEntity = lotRepository.findById(Integer.parseInt(lotId));
-        if (optionalLotEntity.isPresent()) {
-            tech = optionalLotEntity.get().getPaintingByPainting().getTechnique();
-            return findAvailableLots()
-                    .stream()
-                    .filter(
-                            lotEntity ->
-                                    lotEntity
-                                            .getPaintingByPainting()
-                                            .getTechnique()
-                                            .equals(tech)
-                    )
-                    .collect(Collectors.toList());
-        } else throw new NoSuchElementException("Такого лота не существует");
+    public List<LotEntity> findSimilarByTechnique(LotEntity lot) throws NoSuchElementException {
+        String tech = lot.getPaintingByPainting().getTechnique();
+        return findAvailableLots()
+                .stream()
+                .filter(
+                        lotEntity ->
+                                lotEntity
+                                        .getPaintingByPainting()
+                                        .getTechnique()
+                                        .equals(tech)
+                )
+                .filter(e -> !e.equals(lot))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<LotEntity> findSimilarByGenre(String lotId) throws NoSuchElementException {
-        String genre;
-        Optional<LotEntity> optionalLotEntity = lotRepository.findById(Integer.parseInt(lotId));
-        if (optionalLotEntity.isPresent()) {
-            genre = optionalLotEntity
-                    .get()
-                    .getPaintingByPainting()
-                    .getGenre();
-            return findAvailableLots().stream()
-                    .filter(
-                            lotEntity ->
-                                    lotEntity
-                                            .getPaintingByPainting()
-                                            .getGenre()
-                                            .equals(genre)
-                    ).collect(Collectors.toList());
-        } else throw new NoSuchElementException("Такого лота не существует");
+    public List<LotEntity> findSimilarByGenre(LotEntity lot) throws NoSuchElementException {
+        String genre = lot.getPaintingByPainting().getTechnique();
+        return findAvailableLots()
+                .stream()
+                .filter(
+                        lotEntity ->
+                                lotEntity
+                                        .getPaintingByPainting()
+                                        .getGenre()
+                                        .equals(genre)
+                )
+                .filter(e -> !e.equals(lot))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<LotEntity> findSimilarByAuthor(String lotId) throws NoSuchElementException {
-        String author;
-        Optional<LotEntity> optionalLotEntity = lotRepository.findById(Integer.parseInt(lotId));
-        if (optionalLotEntity.isPresent()) {
-            author = optionalLotEntity
-                    .get()
-                    .getPaintingByPainting()
-                    .getAuthor();
-            return findAvailableLots().stream()
-                    .filter(
-                            lotEntity ->
-                                    lotEntity
-                                            .getPaintingByPainting()
-                                            .getAuthor()
-                                            .equals(author)
-                    ).collect(Collectors.toList());
-        } else throw new NoSuchElementException("Такого лота не существует");
+    public List<LotEntity> findSimilarByAuthor(LotEntity lot) throws NoSuchElementException {
+        String author = lot.getPaintingByPainting().getTechnique();
+        return findAvailableLots()
+                .stream()
+                .filter(
+                        lotEntity ->
+                                lotEntity
+                                        .getPaintingByPainting()
+                                        .getAuthor()
+                                        .equals(author)
+                )
+                .filter(e -> !e.equals(lot))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<LotEntity> findForExpert() {
-        return endDateRepository.findAllByStateIsTrue()
-                .stream()
-                .map(
-                        EndDateEntity::getLotByLot
-                )
-                .filter(
-                        lotEntity -> lotEntity
-                                .getState()
-                                .equals("on expert verification")
-                ).collect(Collectors.toList());
+        return lotRepository.findAllByState("on expert verification");
     }
 }

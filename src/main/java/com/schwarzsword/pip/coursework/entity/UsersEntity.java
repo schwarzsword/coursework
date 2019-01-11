@@ -1,10 +1,11 @@
 package com.schwarzsword.pip.coursework.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @Data
 @Entity
@@ -32,12 +33,16 @@ public class UsersEntity {
     @Basic
     @Column(name = "phone", nullable = false, length = 20)
     private String phone;
+    @JsonIgnore
     @OneToMany(mappedBy = "usersByExpert")
     private Collection<CertificateEntity> certificatesById;
+    @JsonIgnore
     @OneToMany(mappedBy = "usersByCustomer")
     private Collection<DealEntity> dealsById;
+    @JsonIgnore
     @OneToMany(mappedBy = "usersBySeller")
     private Collection<LotEntity> lotsById;
+    @JsonIgnore
     @OneToMany(mappedBy = "usersByLastBet")
     private Collection<LotEntity> lotsByLastBet;
     @OneToOne(mappedBy = "usersByOwner")
@@ -58,17 +63,24 @@ public class UsersEntity {
     protected UsersEntity() {
     }
 
-    public UsersEntity(String name, String surname, String username, String password, String mail, String phone) {
+    public UsersEntity(String name, String surname, String username, String password, String mail, String phone, RolesEntity role) {
         this.name = name;
         this.surname = surname;
         this.mail = mail;
         this.phone = phone;
         this.username = username;
         this.password = password;
-        this.roles.add(new RolesEntity("USER"));
+        ArrayList<RolesEntity> list = new ArrayList<>();
+        list.add(role);
+        this.roles = list;
     }
 
-//    @ElementCollection(targetClass = Role.class, fetch = FetchType.LAZY)
-//    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = ))
-//    private List<Role> roles;
+    public void addRole(RolesEntity role) {
+        this.roles.add(role);
+    }
+
+    public void removeRole(RolesEntity role) {
+        this.roles.remove(role);
+    }
+
 }

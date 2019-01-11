@@ -1,5 +1,6 @@
 package com.schwarzsword.pip.coursework.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,10 +17,12 @@ public class WalletEntity {
     @Basic
     @Column(name = "balance", nullable = false)
     private Long balance;
+    @JsonIgnore
     @OneToMany(mappedBy = "walletBySource")
-    private Collection<PaymentEntity> paymentsById;
+    private Collection<PaymentEntity> paymentsByCustomer;
+    @JsonIgnore
     @OneToMany(mappedBy = "walletByDestination")
-    private Collection<PaymentEntity> paymentsById_0;
+    private Collection<PaymentEntity> paymentsBySeller;
     @OneToOne
     @JoinColumn(name = "owner", referencedColumnName = "id", nullable = false)
     private UsersEntity usersByOwner;

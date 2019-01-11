@@ -1,9 +1,10 @@
 package com.schwarzsword.pip.coursework.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Collection;
+import java.util.List;
 
 @Data
 @Entity
@@ -16,6 +17,7 @@ public class PaymentEntity {
     @Basic
     @Column(name = "sum", nullable = false)
     private Long sum;
+    @JsonIgnore
     @OneToOne(mappedBy = "paymentByPayment")
     private DealEntity dealById;
     @ManyToOne

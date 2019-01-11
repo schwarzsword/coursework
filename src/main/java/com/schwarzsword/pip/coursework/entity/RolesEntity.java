@@ -15,8 +15,4 @@ public class RolesEntity {
     @Basic
     @Column(name = "role", nullable = false, length = 20)
     private String role;
-    protected RolesEntity(){}
-    public RolesEntity(String role){
-        this.role = role;
-    }
 }

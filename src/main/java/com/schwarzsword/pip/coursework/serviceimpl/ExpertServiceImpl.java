@@ -26,29 +26,20 @@ public class ExpertServiceImpl implements ExpertService {
     final private
     CertificateRepository certificateRepository;
 
-    final private
-    LotsService lotsService;
-
-    final private
-    RegistrationService registrationService;
 
     final private
     PaintingRepository paintingRepository;
 
     @Autowired
-    public ExpertServiceImpl(LotRepository lotRepository, CertificateRepository certificateRepository, LotsService lotsService, RegistrationService registrationService, PaintingRepository paintingRepository) {
+    public ExpertServiceImpl(LotRepository lotRepository, CertificateRepository certificateRepository, PaintingRepository paintingRepository) {
         this.lotRepository = lotRepository;
         this.certificateRepository = certificateRepository;
-        this.lotsService = lotsService;
-        this.registrationService = registrationService;
         this.paintingRepository = paintingRepository;
     }
 
     @Override
     @Transactional
-    public LotEntity setCertificate(String lotId, String username) throws NoSuchElementException, UsernameNotFoundException {
-        LotEntity lot = lotsService.findLotById(lotId);
-        UsersEntity user = registrationService.getUserByUsername(username);
+    public LotEntity setCertificate(LotEntity lot, UsersEntity user) throws NoSuchElementException, UsernameNotFoundException {
         CertificateEntity certificateEntity = new CertificateEntity(user);
         PaintingEntity paintingEntity = lot.getPaintingByPainting();
         paintingEntity.setCertificateByCertificate(certificateEntity);

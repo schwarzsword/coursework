@@ -3,6 +3,7 @@ package com.schwarzsword.pip.coursework.serviceimpl;
 import com.schwarzsword.pip.coursework.entity.RolesEntity;
 import com.schwarzsword.pip.coursework.entity.UsersEntity;
 import com.schwarzsword.pip.coursework.entity.WalletEntity;
+import com.schwarzsword.pip.coursework.repository.RolesRepository;
 import com.schwarzsword.pip.coursework.repository.UsersRepository;
 import com.schwarzsword.pip.coursework.repository.WalletRepository;
 import com.schwarzsword.pip.coursework.service.RegistrationService;
@@ -26,12 +27,15 @@ public class RegistrationServiceImpl implements RegistrationService {
     private final
     WalletRepository walletRepository;
 
+    private final RolesRepository rolesRepository;
+
     private String salt = BCrypt.gensalt();
 
     @Autowired
-    public RegistrationServiceImpl(WalletRepository walletRepository, UsersRepository usersRepository) {
+    public RegistrationServiceImpl(WalletRepository walletRepository, UsersRepository usersRepository, RolesRepository rolesRepository) {
         this.usersRepository = usersRepository;
         this.walletRepository = walletRepository;
+        this.rolesRepository = rolesRepository;
     }
 
     @Override
@@ -44,7 +48,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                 .collect(Collectors.toList());
         if (BCrypt.checkpw(password, usersEntity.getPassword())) {
             if (rolesList.contains("BANNED")) throw new UserDeniedAuthorizationException("Пользователь забанен");
-                return usersEntity;
+            return usersEntity;
         } else throw new UserDeniedAuthorizationException("Неверное имя пользователя или пароль");
     }
 
@@ -54,10 +58,12 @@ public class RegistrationServiceImpl implements RegistrationService {
             throws UserDeclinedException {
         if (!usersRepository.existsByUsernameOrPhoneOrMail(username, phone, mail)) {
             String pwd = BCrypt.hashpw(password, salt);
-            UsersEntity user = new UsersEntity(name, surname, username, pwd, mail, phone);
+            RolesEntity role = rolesRepository.getByRole("USER");
+            UsersEntity user = new UsersEntity(name, surname, username, pwd, mail, phone, role);
             usersRepository.save(user);
             WalletEntity walletEntity = new WalletEntity(user);
             walletRepository.save(walletEntity);
+            user.setWalletById(walletEntity);
             return user;
         } else throw new UserDeclinedException("Данный пользователь уже существует");
     }

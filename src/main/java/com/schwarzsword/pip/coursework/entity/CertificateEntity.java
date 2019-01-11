@@ -1,11 +1,13 @@
 package com.schwarzsword.pip.coursework.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -22,6 +24,7 @@ public class CertificateEntity {
     @ManyToOne
     @JoinColumn(name = "expert", referencedColumnName = "id")
     private UsersEntity usersByExpert;
+    @JsonIgnore
     @OneToMany(mappedBy = "certificateByCertificate")
     private Collection<PaintingEntity> paintings;
 

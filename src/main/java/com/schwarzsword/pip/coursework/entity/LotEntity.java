@@ -1,11 +1,12 @@
 package com.schwarzsword.pip.coursework.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Collection;
+import java.util.List;
 
 @Data
 @Entity
@@ -19,11 +20,15 @@ public class LotEntity {
     @Column(name = "start_date")
     private Timestamp startDate;
     @Basic
-    @Column(name = "state", nullable = false, length = 20)
+    @Column(name = "state", nullable = false, length = 50)
     private String state;
     @Basic
     @Column(name = "start_price", nullable = false)
     private Long startPrice;
+    @Basic
+    @Column(name = "policy")
+    private Integer policy;
+    @JsonIgnore
     @OneToOne(mappedBy = "lotByLot")
     private EndDateEntity endDateById;
     @ManyToOne
@@ -36,15 +41,17 @@ public class LotEntity {
     @JoinColumn(name = "last_bet", referencedColumnName = "id")
     private UsersEntity usersByLastBet;
 
+
     protected LotEntity() {
     }
 
-    public LotEntity(PaintingEntity paintingEntity, Long startPrice, UsersEntity seller) {
+    public LotEntity(PaintingEntity paintingEntity, Long startPrice, UsersEntity seller, Integer policy) {
         long l = System.currentTimeMillis()/1000/60/60+1;
         this.startDate=new Timestamp(l*1000*60*60);
         this.startPrice=startPrice;
         this.usersBySeller = seller;
         this.paintingByPainting = paintingEntity;
         this.state="on market";
+        this.policy = policy;
     }
 }

@@ -1,11 +1,9 @@
 package com.schwarzsword.pip.coursework.serviceimpl;
 
 import com.schwarzsword.pip.coursework.entity.*;
-import com.schwarzsword.pip.coursework.repository.EndDateRepository;
-import com.schwarzsword.pip.coursework.repository.LotRepository;
-import com.schwarzsword.pip.coursework.repository.UsersRepository;
-import com.schwarzsword.pip.coursework.repository.WalletRepository;
+import com.schwarzsword.pip.coursework.repository.*;
 import com.schwarzsword.pip.coursework.service.AdminService;
+import com.schwarzsword.pip.coursework.service.EmailService;
 import com.schwarzsword.pip.coursework.service.LotsService;
 import com.schwarzsword.pip.coursework.service.RegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,19 +28,21 @@ public class AdminServiceImpl implements AdminService {
     final private
     WalletRepository walletRepository;
 
-    final private
-    RegistrationService registrationService;
-
     private final UsersRepository usersRepository;
 
+    final private EmailService emailService;
+
+    private final RolesRepository rolesRepository;
+
     @Autowired
-    public AdminServiceImpl(RegistrationService registrationService, LotsService lotsService, EndDateRepository endDateRepository, LotRepository lotRepository, WalletRepository walletRepository, UsersRepository usersRepository) {
+    public AdminServiceImpl( LotsService lotsService, EndDateRepository endDateRepository, LotRepository lotRepository, WalletRepository walletRepository, UsersRepository usersRepository, EmailService emailService, RolesRepository rolesRepository) {
         this.lotsService = lotsService;
         this.endDateRepository = endDateRepository;
         this.lotRepository = lotRepository;
         this.walletRepository = walletRepository;
-        this.registrationService = registrationService;
         this.usersRepository = usersRepository;
+        this.emailService = emailService;
+        this.rolesRepository = rolesRepository;
     }
 
     @Transactional
@@ -53,9 +53,14 @@ public class AdminServiceImpl implements AdminService {
         endDateRepository.delete(endDateEntity);
         lot.setState("deleted");
         lotRepository.save(lot);
-        UsersEntity usersEntity = lot.getUsersByLastBet();
-        if (!(usersEntity == null)) {
-            WalletEntity walletEntity = usersEntity.getWalletById();
+        UsersEntity seller = lot.getUsersBySeller();
+        UsersEntity customer = lot.getUsersByLastBet();
+        emailService.sendSimpleMessage(seller.getMail(), "Удаление лота", "Ваш лот был удален с аукциона.\n" +
+                " Возможно подозрение в мошенничестве. \n" +
+                "Если вы считаете, что удаление необосновано, то можете написать в поддержку\n" +
+                "С уважением, администрация интернет-аукциона.");
+        if (!(customer == null)) {
+            WalletEntity walletEntity = customer.getWalletById();
             walletEntity.setBalance(walletEntity.getBalance() + lot.getStartPrice());
             walletRepository.save(walletEntity);
         }
@@ -64,10 +69,33 @@ public class AdminServiceImpl implements AdminService {
 
     @Transactional
     @Override
-    public UsersEntity banUser(String username) throws UsernameNotFoundException {
-        UsersEntity user = registrationService.getUserByUsername(username);
-        user.setRoles(Arrays.asList(new RolesEntity("BANNED")));
-        usersRepository.save(user);
+    public UsersEntity banUser(UsersEntity user){
+        addRole(user, "BANNED");
+        emailService.sendSimpleMessage(user.getMail(), "Блокировка пользователя", "Ваш аккаунт был заблокирован администрацией интернет-аукциона.\n" +
+                "Возможно, была замечена подозрительная активность.\n" +
+                "По всем вопросам вы можете обратиться в поддержкку\n" +
+                "С уважением, администрация интернет-аукциона.");
+        return user;
+    }
+    @Transactional
+    @Override
+    public UsersEntity unbanUser(UsersEntity user) {
+        removeRole(user, "BANNED");
+        emailService.sendSimpleMessage(user.getMail(), "Разблокировка пользователя", "Ваш аккаунт был разблокирован администрацией " +
+                "интернет-аукциона после вашего обращения.\n" +
+                "Приносим свои извенения за временные неудобства.");
+        return user;
+    }
+
+    @Override
+    public UsersEntity addRole(UsersEntity user, String role) {
+        user.addRole(rolesRepository.getByRole(role));
+        return user;
+    }
+
+    @Override
+    public UsersEntity removeRole(UsersEntity user, String role) {
+        user.removeRole(rolesRepository.getByRole(role));
         return user;
     }
 }
