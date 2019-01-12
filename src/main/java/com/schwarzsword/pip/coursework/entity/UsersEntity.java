@@ -30,9 +30,6 @@ public class UsersEntity {
     @Basic
     @Column(name = "mail", nullable = false)
     private String mail;
-    @Basic
-    @Column(name = "phone", nullable = false, length = 20)
-    private String phone;
     @JsonIgnore
     @OneToMany(mappedBy = "usersByExpert")
     private Collection<CertificateEntity> certificatesById;
@@ -63,12 +60,11 @@ public class UsersEntity {
     protected UsersEntity() {
     }
 
-    public UsersEntity(String name, String surname, String username, String password, String mail, String phone, RolesEntity role) {
+    public UsersEntity(String name, String surname, String password, String mail, RolesEntity role) {
         this.name = name;
         this.surname = surname;
         this.mail = mail;
-        this.phone = phone;
-        this.username = username;
+        this.username = mail;
         this.password = password;
         ArrayList<RolesEntity> list = new ArrayList<>();
         list.add(role);

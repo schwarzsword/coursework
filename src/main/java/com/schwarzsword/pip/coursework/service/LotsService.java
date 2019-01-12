@@ -15,7 +15,7 @@ public interface LotsService {
 
     List<LotEntity> findOwnedLotsByCustomersUser(UsersEntity user);
 
-    List<LotEntity> findSelledLotsBySellersUser(UsersEntity user);
+    List<LotEntity> findSoldLotsBySellersUser(UsersEntity user);
 
     List<LotEntity> findSellingLotsBySellersUser(UsersEntity user);
 

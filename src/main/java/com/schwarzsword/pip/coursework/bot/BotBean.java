@@ -3,6 +3,8 @@ package com.schwarzsword.pip.coursework.bot;
 import com.schwarzsword.pip.coursework.entity.*;
 import com.schwarzsword.pip.coursework.repository.*;
 import com.schwarzsword.pip.coursework.service.LotsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -12,12 +14,9 @@ import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.List;
 
 @Component
-@Scope("periodical")
 public class BotBean {
     private final LotsService lotsService;
     private final EndDateRepository endDateRepository;
@@ -36,9 +35,11 @@ public class BotBean {
         this.paymentRepository = paymentRepository;
     }
 
+    private Logger log = LoggerFactory.getLogger(BotBean.class);
+
     @Transactional
-    @PostConstruct
     public void setResults() {
+        log.info("я живой");
         List<LotEntity> list = lotsService.findAvailableLots();
         list.forEach(lot -> {
             EndDateEntity endDate = lot.getEndDateById();

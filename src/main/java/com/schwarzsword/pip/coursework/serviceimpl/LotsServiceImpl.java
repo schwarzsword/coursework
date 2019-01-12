@@ -67,7 +67,7 @@ public class LotsServiceImpl implements LotsService {
     }
 
     @Override
-    public List<LotEntity> findSelledLotsBySellersUser(UsersEntity user) {
+    public List<LotEntity> findSoldLotsBySellersUser(UsersEntity user) {
         return user.getLotsById().stream().filter(
                 lotEntity -> lotEntity
                         .getState()

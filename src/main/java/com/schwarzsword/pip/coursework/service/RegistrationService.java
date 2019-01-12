@@ -8,9 +8,10 @@ import org.springframework.security.oauth2.common.exceptions.UserDeniedAuthoriza
 public interface RegistrationService {
     UsersEntity signIn(String username, String password) throws UserDeniedAuthorizationException;
 
-    UsersEntity signUp(String name, String surname, String username, String password, String mail, String phone)
+    UsersEntity signUp(String name, String surname, String password, String mail)
             throws UserDeclinedException;
 
     UsersEntity getUserByUsername(String username) throws UsernameNotFoundException;
 
+    UsersEntity authentication(String mail, String name, String surname);
 }

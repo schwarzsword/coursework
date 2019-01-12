@@ -46,8 +46,8 @@ public class LotEntity {
     }
 
     public LotEntity(PaintingEntity paintingEntity, Long startPrice, UsersEntity seller, Integer policy) {
-        long l = System.currentTimeMillis()/1000/60/60+1;
-        this.startDate=new Timestamp(l*1000*60*60);
+        long l = System.currentTimeMillis()/1000/60+1;
+        this.startDate=new Timestamp(l*1000*60);
         this.startPrice=startPrice;
         this.usersBySeller = seller;
         this.paintingByPainting = paintingEntity;

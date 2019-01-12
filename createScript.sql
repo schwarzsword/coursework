@@ -4,8 +4,7 @@ create table users (
   surname  varchar(50)         not null,
   username varchar(30) unique  not null,
   password varchar(100)        not null,
-  mail     varchar(255) unique not null,
-  phone    varchar(20) unique  not null
+  mail     varchar(255) unique not null
 );
 
 create table roles (
@@ -26,7 +25,7 @@ create table painting (
   technique   varchar(30) not null,
   genre       varchar(30) not null,
   description text,
-  img         text        not null,
+  img         varchar(255),
   certificate integer unique check (certificate > 0) references certificate (id)
 );
 

@@ -54,12 +54,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Transactional
     @Override
-    public UsersEntity signUp(String name, String surname, String username, String password, String mail, String phone)
+    public UsersEntity signUp(String name, String surname, String password, String mail)
             throws UserDeclinedException {
-        if (!usersRepository.existsByUsernameOrPhoneOrMail(username, phone, mail)) {
+        if (!usersRepository.existsByMail(mail)) {
             String pwd = BCrypt.hashpw(password, salt);
             RolesEntity role = rolesRepository.getByRole("USER");
-            UsersEntity user = new UsersEntity(name, surname, username, pwd, mail, phone, role);
+            UsersEntity user = new UsersEntity(name, surname, pwd, mail, role);
             usersRepository.save(user);
             WalletEntity walletEntity = new WalletEntity(user);
             walletRepository.save(walletEntity);
@@ -75,4 +75,12 @@ public class RegistrationServiceImpl implements RegistrationService {
             return optionalUsersEntity.get();
         } else throw new UsernameNotFoundException("Пользователь с данным именем не найден");
     }
+
+    @Override
+    public UsersEntity authentication(String mail, String name, String surname) {
+        return usersRepository.findByUsername(mail).orElseGet(
+                () -> new UsersEntity(name, surname, "", mail, rolesRepository.getByRole("USER"))
+        );
+    }
+
 }
