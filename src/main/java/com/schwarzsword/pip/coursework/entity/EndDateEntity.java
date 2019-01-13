@@ -23,7 +23,7 @@ public class EndDateEntity {
     @JsonIgnore
     @OneToOne(mappedBy = "endDateBySoldDate")
     private DealEntity dealById;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lot", referencedColumnName = "id", nullable = false)
     private LotEntity lotByLot;
 

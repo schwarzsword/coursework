@@ -24,12 +24,15 @@ public class UsersEntity {
     @Basic
     @Column(name = "username", nullable = false, length = 30)
     private String username;
+    @JsonIgnore
     @Basic
     @Column(name = "password", nullable = false, length = 100)
     private String password;
     @Basic
+    @JsonIgnore
     @Column(name = "mail", nullable = false)
     private String mail;
+
     @JsonIgnore
     @OneToMany(mappedBy = "usersByExpert")
     private Collection<CertificateEntity> certificatesById;
@@ -42,9 +45,10 @@ public class UsersEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "usersByLastBet")
     private Collection<LotEntity> lotsByLastBet;
+    @JsonIgnore
     @OneToOne(mappedBy = "usersByOwner")
     private WalletEntity walletById;
-    @ManyToMany(fetch = FetchType.EAGER,
+    @ManyToMany(fetch = FetchType.LAZY,
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.MERGE

@@ -47,7 +47,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                 .map(RolesEntity::getRole)
                 .collect(Collectors.toList());
         if (BCrypt.checkpw(password, usersEntity.getPassword())) {
-            if (rolesList.contains("BANNED")) throw new UserDeniedAuthorizationException("Пользователь забанен");
+            if (rolesList.contains("ROLE_BANNED")) throw new UserDeniedAuthorizationException("Пользователь забанен");
             return usersEntity;
         } else throw new UserDeniedAuthorizationException("Неверное имя пользователя или пароль");
     }
@@ -58,7 +58,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             throws UserDeclinedException {
         if (!usersRepository.existsByMail(mail)) {
             String pwd = BCrypt.hashpw(password, salt);
-            RolesEntity role = rolesRepository.getByRole("USER");
+            RolesEntity role = rolesRepository.getByRole("ROLE_USER");
             UsersEntity user = new UsersEntity(name, surname, pwd, mail, role);
             usersRepository.save(user);
             WalletEntity walletEntity = new WalletEntity(user);
@@ -79,7 +79,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     public UsersEntity authentication(String mail, String name, String surname) {
         return usersRepository.findByUsername(mail).orElseGet(
-                () -> new UsersEntity(name, surname, "", mail, rolesRepository.getByRole("USER"))
+                () -> new UsersEntity(name, surname, "", mail, rolesRepository.getByRole("ROLE_USER"))
         );
     }
 

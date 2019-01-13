@@ -3,6 +3,7 @@ package com.schwarzsword.pip.coursework.service;
 import com.schwarzsword.pip.coursework.entity.LotEntity;
 import com.schwarzsword.pip.coursework.entity.UsersEntity;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 public interface AdminService {
@@ -15,4 +16,6 @@ public interface AdminService {
     UsersEntity addRole(UsersEntity user, String role);
 
     UsersEntity removeRole(UsersEntity user, String role);
+
+    List<UsersEntity> showBanned();
 }

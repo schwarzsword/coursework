@@ -1,5 +1,6 @@
 package com.schwarzsword.pip.coursework.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -12,13 +13,14 @@ public class DealEntity {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sold_date", referencedColumnName = "id")
     private EndDateEntity endDateBySoldDate;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "customer", referencedColumnName = "id")
     private UsersEntity usersByCustomer;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment", referencedColumnName = "id", nullable = false)
     private PaymentEntity paymentByPayment;
 

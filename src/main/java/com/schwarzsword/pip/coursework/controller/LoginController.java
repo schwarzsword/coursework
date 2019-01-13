@@ -26,7 +26,7 @@ public class LoginController {
 
             UsersEntity user = registrationService.signUp(name, surname, password, mail);
         } catch (UserDeclinedException ex) {
-            return ResponseEntity.ok(ex.getMessage());
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
         return ResponseEntity.ok(true);
     }

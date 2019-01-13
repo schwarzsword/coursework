@@ -49,4 +49,9 @@ public class ExpertServiceImpl implements ExpertService {
         lotRepository.save(lot);
         return lot;
     }
+
+    @Override
+    public void deleteInvalidPainting(PaintingEntity painting) {
+        paintingRepository.delete(painting);
+    }
 }

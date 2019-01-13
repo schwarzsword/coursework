@@ -1,10 +1,12 @@
 package com.schwarzsword.pip.coursework.controller;
 
+import com.schwarzsword.pip.coursework.entity.DealEntity;
 import com.schwarzsword.pip.coursework.entity.LotEntity;
 import com.schwarzsword.pip.coursework.entity.UsersEntity;
 import com.schwarzsword.pip.coursework.service.JsonService;
 import com.schwarzsword.pip.coursework.service.LotsService;
 import com.schwarzsword.pip.coursework.service.RegistrationService;
+import com.schwarzsword.pip.coursework.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -15,12 +17,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/lots")
 public class LotsController {
-
+    private final
+    UserService userService;
     final private
     LotsService lotsService;
     final private
@@ -29,10 +33,11 @@ public class LotsController {
     RegistrationService registrationService;
 
     @Autowired
-    public LotsController(LotsService lotsService, JsonService jsonService, RegistrationService registrationService) {
+    public LotsController(LotsService lotsService, JsonService jsonService, RegistrationService registrationService, UserService userService) {
         this.lotsService = lotsService;
         this.jsonService = jsonService;
         this.registrationService = registrationService;
+        this.userService = userService;
     }
 
     @RequestMapping("/available")
@@ -41,7 +46,7 @@ public class LotsController {
     }
 
     @RequestMapping("/expert")
-    @Secured("EXPERT")
+    @Secured("ROLE_EXPERT")
     public ResponseEntity showToExpert() {
         return ResponseEntity.ok(jsonService.toJson(lotsService.findForExpert()));
     }
@@ -52,56 +57,66 @@ public class LotsController {
 
             return ResponseEntity.ok(jsonService.toJson(lotsService.findLotById(lotId)));
         } catch (NoSuchElementException ex) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 
     @RequestMapping(value = "/selled", method = RequestMethod.GET)
-    @Secured({"USER", "ADMIN"})
-    public ResponseEntity showSold(@AuthenticationPrincipal User user){
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    public ResponseEntity showSold(@AuthenticationPrincipal User user) {
         UsersEntity usersEntity = registrationService.getUserByUsername(user.getUsername());
         return ResponseEntity.ok(jsonService.toJson(lotsService.findSoldLotsBySellersUser(usersEntity)));
     }
 
     @RequestMapping(value = "/selling", method = RequestMethod.GET)
-    @Secured({"USER", "ADMIN"})
-    public ResponseEntity showSelling(@AuthenticationPrincipal User user){
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    public ResponseEntity showSelling(@AuthenticationPrincipal User user) {
         UsersEntity usersEntity = registrationService.getUserByUsername(user.getUsername());
         return ResponseEntity.ok(jsonService.toJson(lotsService.findSellingLotsBySellersUser(usersEntity)));
     }
 
     @RequestMapping(value = "/bought", method = RequestMethod.GET)
-    @Secured({"USER", "ADMIN"})
-    public ResponseEntity showBought(@AuthenticationPrincipal User user){
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    public ResponseEntity showBought(@AuthenticationPrincipal User user) {
         UsersEntity usersEntity = registrationService.getUserByUsername(user.getUsername());
         return ResponseEntity.ok(jsonService.toJson(lotsService.findOwnedLotsByCustomersUser(usersEntity)));
     }
 
     @RequestMapping(value = "/similarAuthor", method = RequestMethod.GET)
-    public ResponseEntity showSimilarByAuthor(@RequestParam String lotId){
+    public ResponseEntity showSimilarByAuthor(@RequestParam String lotId) {
         try {
             LotEntity lot = lotsService.findLotById(lotId);
             return ResponseEntity.ok(jsonService.toJson(lotsService.findSimilarByAuthor(lot)));
         } catch (NoSuchElementException ex) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
+
     @RequestMapping(value = "/similarGenre", method = RequestMethod.GET)
-    public ResponseEntity showSimilarByGenre(@RequestParam String lotId){
+    public ResponseEntity showSimilarByGenre(@RequestParam String lotId) {
         try {
-        LotEntity lot = lotsService.findLotById(lotId);
-        return ResponseEntity.ok(jsonService.toJson(lotsService.findSimilarByGenre(lot)));
-    } catch (NoSuchElementException ex) {
-        return ResponseEntity.noContent().build();
-    }
-    }
-    @RequestMapping(value = "/similarTech", method = RequestMethod.GET)
-    public ResponseEntity showSimilarByTechnique(@RequestParam String lotId){
-        try {
-        LotEntity lot = lotsService.findLotById(lotId);
-        return ResponseEntity.ok(jsonService.toJson(lotsService.findSimilarByTechnique(lot)));
-    } catch (NoSuchElementException ex) {
-        return ResponseEntity.noContent().build();
+            LotEntity lot = lotsService.findLotById(lotId);
+            return ResponseEntity.ok(jsonService.toJson(lotsService.findSimilarByGenre(lot)));
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
+    }
+
+    @RequestMapping(value = "/similarTech", method = RequestMethod.GET)
+    public ResponseEntity showSimilarByTechnique(@RequestParam String lotId) {
+        try {
+            LotEntity lot = lotsService.findLotById(lotId);
+            return ResponseEntity.ok(jsonService.toJson(lotsService.findSimilarByTechnique(lot)));
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/history", method = RequestMethod.GET)
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    public ResponseEntity showHistory(@AuthenticationPrincipal User user) {
+        UsersEntity user1 = registrationService.getUserByUsername(user.getUsername());
+        List<DealEntity> dealEntities = userService.showHistory(user1);
+        return ResponseEntity.ok(jsonService.toJson(dealEntities));
     }
 }

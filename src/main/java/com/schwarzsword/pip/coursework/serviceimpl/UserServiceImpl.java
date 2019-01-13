@@ -7,7 +7,6 @@ import com.schwarzsword.pip.coursework.exceptions.SelfBetException;
 import com.schwarzsword.pip.coursework.repository.LotRepository;
 import com.schwarzsword.pip.coursework.repository.PaintingRepository;
 import com.schwarzsword.pip.coursework.repository.WalletRepository;
-import com.schwarzsword.pip.coursework.service.LotsService;
 import com.schwarzsword.pip.coursework.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 @Service("userService")
 public class UserServiceImpl implements UserService {
@@ -24,15 +22,12 @@ public class UserServiceImpl implements UserService {
 
     private final PaintingRepository paintingRepository;
 
-    private final LotsService lotsService;
-
     private final LotRepository lotRepository;
 
     @Autowired
-    public UserServiceImpl(WalletRepository walletRepository, PaintingRepository paintingRepository, LotsService lotsService, LotRepository lotRepository) {
+    public UserServiceImpl(WalletRepository walletRepository, PaintingRepository paintingRepository, LotRepository lotRepository) {
         this.walletRepository = walletRepository;
         this.paintingRepository = paintingRepository;
-        this.lotsService = lotsService;
         this.lotRepository = lotRepository;
     }
 

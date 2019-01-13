@@ -23,7 +23,7 @@ public class WalletEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "walletByDestination")
     private Collection<PaymentEntity> paymentsBySeller;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner", referencedColumnName = "id", nullable = false)
     private UsersEntity usersByOwner;
 

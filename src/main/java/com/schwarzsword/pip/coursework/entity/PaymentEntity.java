@@ -20,10 +20,10 @@ public class PaymentEntity {
     @JsonIgnore
     @OneToOne(mappedBy = "paymentByPayment")
     private DealEntity dealById;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source", referencedColumnName = "id", nullable = false)
     private WalletEntity walletBySource;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "destination", referencedColumnName = "id", nullable = false)
     private WalletEntity walletByDestination;
 

@@ -5,8 +5,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Entity
@@ -29,15 +27,15 @@ public class LotEntity {
     @Column(name = "policy")
     private Integer policy;
     @JsonIgnore
-    @OneToOne(mappedBy = "lotByLot")
+    @OneToOne(mappedBy = "lotByLot", fetch = FetchType.LAZY)
     private EndDateEntity endDateById;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "painting", referencedColumnName = "id", nullable = false)
     private PaintingEntity paintingByPainting;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller", referencedColumnName = "id")
     private UsersEntity usersBySeller;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "last_bet", referencedColumnName = "id")
     private UsersEntity usersByLastBet;
 
@@ -46,12 +44,12 @@ public class LotEntity {
     }
 
     public LotEntity(PaintingEntity paintingEntity, Long startPrice, UsersEntity seller, Integer policy) {
-        long l = System.currentTimeMillis()/1000/60+1;
-        this.startDate=new Timestamp(l*1000*60);
-        this.startPrice=startPrice;
+        long l = System.currentTimeMillis() / 1000 / 60 + 1;
+        this.startDate = new Timestamp(l * 1000 * 60);
+        this.startPrice = startPrice;
         this.usersBySeller = seller;
         this.paintingByPainting = paintingEntity;
-        this.state="on market";
+        this.state = "on market";
         this.policy = policy;
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service("adminService")
@@ -70,7 +71,7 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     @Override
     public UsersEntity banUser(UsersEntity user){
-        addRole(user, "BANNED");
+        addRole(user, "ROLE_BANNED");
         emailService.sendSimpleMessage(user.getMail(), "Блокировка пользователя", "Ваш аккаунт был заблокирован администрацией интернет-аукциона.\n" +
                 "Возможно, была замечена подозрительная активность.\n" +
                 "По всем вопросам вы можете обратиться в поддержкку\n" +
@@ -80,7 +81,7 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     @Override
     public UsersEntity unbanUser(UsersEntity user) {
-        removeRole(user, "BANNED");
+        removeRole(user, "ROLE_BANNED");
         emailService.sendSimpleMessage(user.getMail(), "Разблокировка пользователя", "Ваш аккаунт был разблокирован администрацией " +
                 "интернет-аукциона после вашего обращения.\n" +
                 "Приносим свои извенения за временные неудобства.");
@@ -97,5 +98,10 @@ public class AdminServiceImpl implements AdminService {
     public UsersEntity removeRole(UsersEntity user, String role) {
         user.removeRole(rolesRepository.getByRole(role));
         return user;
+    }
+
+    @Override
+    public List<UsersEntity> showBanned() {
+        return  usersRepository.findAllByRoles(rolesRepository.getByRole("ROLE_BANNED"));
     }
 }

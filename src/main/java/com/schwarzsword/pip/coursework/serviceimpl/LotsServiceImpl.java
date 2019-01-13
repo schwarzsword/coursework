@@ -93,9 +93,8 @@ public class LotsServiceImpl implements LotsService {
                 .stream()
                 .map(LotEntity::getPaintingByPainting)
                 .forEach(e -> {
-                    if (e.getCertificateByCertificate()
-                            .equals(painting.getCertificateByCertificate()))
-                        throw new IllegalCertificateException("Лот с данным сертификатом уже выставлен");
+                    if (e.equals(painting))
+                        throw new IllegalCertificateException("Данный лот уже выставлен");
                 });
         LotEntity lot = new LotEntity(painting, startPrice, user, policy);
         if (painting.getCertificateByCertificate() == null) {

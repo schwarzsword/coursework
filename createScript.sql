@@ -82,11 +82,11 @@ create table users_roles (
 );
 
 insert into roles (id, role)
-values (1, 'USER');
+values (1, 'ROLE_USER');
 insert into roles (id, role)
-values (2, 'ADMIN');
+values (2, 'ROLE_ADMIN');
 insert into roles (id, role)
-values (3, 'EXPERT');
+values (3, 'ROLE_EXPERT');
 insert into roles (id, role)
-values (4, 'BANNED');
+values (4, 'ROLE_BANNED');
 

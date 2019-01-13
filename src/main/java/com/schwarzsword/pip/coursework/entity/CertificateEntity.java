@@ -1,14 +1,10 @@
 package com.schwarzsword.pip.coursework.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Data
@@ -21,16 +17,13 @@ public class CertificateEntity {
     @Basic
     @Column(name = "date", nullable = false)
     private Timestamp date;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "expert", referencedColumnName = "id")
     private UsersEntity usersByExpert;
-    @JsonIgnore
-    @OneToMany(mappedBy = "certificateByCertificate")
-    private Collection<PaintingEntity> paintings;
 
-    protected CertificateEntity(){}
+    protected CertificateEntity() {}
 
-    public  CertificateEntity(UsersEntity user){
+    public CertificateEntity(UsersEntity user) {
         this.usersByExpert = user;
         this.date = Timestamp.valueOf(LocalDateTime.now());
     }
