@@ -50,7 +50,7 @@ public class LotsServiceImpl implements LotsService {
         Optional<LotEntity> tmp = lotRepository.findById(Integer.parseInt(id));
         if (tmp.isPresent()) {
             lot = tmp.get();
-        } else throw new NoSuchElementException();
+        } else throw new NoSuchElementException("Лот не найден");
         return lot;
     }
 

@@ -48,7 +48,7 @@ public class UsersEntity {
     @JsonIgnore
     @OneToOne(mappedBy = "usersByOwner")
     private WalletEntity walletById;
-    @ManyToMany(fetch = FetchType.LAZY,
+    @ManyToMany(fetch = FetchType.EAGER,
             cascade = {
                     CascadeType.PERSIST,
                     CascadeType.MERGE
