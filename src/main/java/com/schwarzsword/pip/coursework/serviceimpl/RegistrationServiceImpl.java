@@ -7,7 +7,6 @@ import com.schwarzsword.pip.coursework.repository.RolesRepository;
 import com.schwarzsword.pip.coursework.repository.UsersRepository;
 import com.schwarzsword.pip.coursework.repository.WalletRepository;
 import com.schwarzsword.pip.coursework.service.RegistrationService;
-import com.sun.deploy.security.UserDeclinedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -55,7 +54,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Transactional
     @Override
     public UsersEntity signUp(String name, String surname, String password, String mail)
-            throws UserDeclinedException {
+            throws UserDeniedAuthorizationException {
         if (!usersRepository.existsByMail(mail)) {
             String pwd = BCrypt.hashpw(password, salt);
             RolesEntity role = rolesRepository.getByRole("ROLE_USER");
@@ -65,7 +64,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             walletRepository.save(walletEntity);
             user.setWalletById(walletEntity);
             return user;
-        } else throw new UserDeclinedException("Данный пользователь уже существует");
+        } else throw new UserDeniedAuthorizationException("Данный пользователь уже существует");
     }
 
     @Override

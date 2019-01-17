@@ -2,9 +2,9 @@ package com.schwarzsword.pip.coursework.controller;
 
 import com.schwarzsword.pip.coursework.entity.UsersEntity;
 import com.schwarzsword.pip.coursework.service.RegistrationService;
-import com.sun.deploy.security.UserDeclinedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.common.exceptions.UserDeniedAuthorizationException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +25,7 @@ public class LoginController {
         try {
 
             UsersEntity user = registrationService.signUp(name, surname, password, mail);
-        } catch (UserDeclinedException ex) {
+        } catch (UserDeniedAuthorizationException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
         return ResponseEntity.ok(true);

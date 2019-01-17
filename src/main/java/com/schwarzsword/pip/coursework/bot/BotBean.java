@@ -6,11 +6,10 @@ import com.schwarzsword.pip.coursework.service.LotsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,61 +36,65 @@ public class BotBean {
 
     private Logger log = LoggerFactory.getLogger(BotBean.class);
 
+    @Scheduled(fixedRate = 60000)
     @Transactional
     public void setResults() {
         log.info("я живой");
         List<LotEntity> list = lotsService.findAvailableLots();
-        list.forEach(lot -> {
-            EndDateEntity endDate = lot.getEndDateById();
-            if (endDate.getExpectingDate().before(Timestamp.valueOf(LocalDateTime.now())) && lot.getUsersByLastBet() != null) {
-                UsersEntity customer = lot.getUsersByLastBet();
-                UsersEntity seller = lot.getUsersBySeller();
-                WalletEntity custWallet = customer.getWalletById();
-                WalletEntity sellWallet = seller.getWalletById();
-                lot.setState("sold");
-                lotRepository.save(lot);
-                sellWallet.setBalance(sellWallet.getBalance() + lot.getStartPrice());
-                walletRepository.save(sellWallet);
-                PaymentEntity paymentEntity = new PaymentEntity(lot.getStartPrice(), custWallet, sellWallet);
-                DealEntity deal = new DealEntity(endDate, customer, paymentEntity);
-                paymentRepository.save(paymentEntity);
-                if (sellWallet.getPaymentsBySeller() != null) {
-                    List<PaymentEntity> sellWalletPaymentsBySeller = new ArrayList<>(sellWallet.getPaymentsBySeller());
-                    sellWalletPaymentsBySeller.add(paymentEntity);
-                    sellWallet.setPaymentsBySeller(sellWalletPaymentsBySeller);
-                } else {
-                    ArrayList<PaymentEntity> paymentEntities = new ArrayList<>();
-                    paymentEntities.add(paymentEntity);
-                    sellWallet.setPaymentsBySeller(paymentEntities);
-                }
-                if (custWallet.getPaymentsByCustomer() != null) {
-                    List<PaymentEntity> custWalletPaymentsBySeller = new ArrayList<>(custWallet.getPaymentsBySeller());
-                    custWalletPaymentsBySeller.add(paymentEntity);
-                    custWallet.setPaymentsByCustomer(custWalletPaymentsBySeller);
-                } else {
-                    ArrayList<PaymentEntity> paymentEntities = new ArrayList<>();
-                    paymentEntities.add(paymentEntity);
-                    custWallet.setPaymentsBySeller(paymentEntities);
-                }
-                dealRepository.save(deal);
-                endDate.setDealById(deal);
-                endDate.setState(false);
-                endDateRepository.save(endDate);
-                if (customer.getDealsById() != null) {
-                    List<DealEntity> dealsById = new ArrayList<>(customer.getDealsById());
-                    dealsById.add(deal);
-                    customer.setDealsById(dealsById);
-                } else {
-                    ArrayList<DealEntity> dealEntities = new ArrayList<>();
-                    dealEntities.add(deal);
-                    customer.setDealsById(dealEntities);
-                }
-            } else if (lot.getPolicy() != null)
-                endDate.setExpectingDate(Timestamp.valueOf(endDate.getExpectingDate().toLocalDateTime().plusDays(lot.getPolicy())));
-            else {
-                endDate.setState(false);
-                lot.setState("time expired");
+        list.forEach(this::handleLot);
+    }
+
+    @Transactional
+    public void handleLot(LotEntity lot){
+        EndDateEntity endDate = lot.getEndDateById();
+        if (endDate.getExpectingDate().before(Timestamp.valueOf(LocalDateTime.now())) && lot.getUsersByLastBet() != null) {
+            UsersEntity customer = lot.getUsersByLastBet();
+            UsersEntity seller = lot.getUsersBySeller();
+            WalletEntity custWallet = customer.getWalletById();
+            WalletEntity sellWallet = seller.getWalletById();
+            lot.setState("sold");
+            lotRepository.save(lot);
+            sellWallet.setBalance(sellWallet.getBalance() + lot.getStartPrice());
+            walletRepository.save(sellWallet);
+            PaymentEntity paymentEntity = new PaymentEntity(lot.getStartPrice(), custWallet, sellWallet);
+            DealEntity deal = new DealEntity(endDate, customer, paymentEntity);
+            paymentRepository.save(paymentEntity);
+            if (sellWallet.getPaymentsBySeller() != null) {
+                List<PaymentEntity> sellWalletPaymentsBySeller = new ArrayList<>(sellWallet.getPaymentsBySeller());
+                sellWalletPaymentsBySeller.add(paymentEntity);
+                sellWallet.setPaymentsBySeller(sellWalletPaymentsBySeller);
+            } else {
+                ArrayList<PaymentEntity> paymentEntities = new ArrayList<>();
+                paymentEntities.add(paymentEntity);
+                sellWallet.setPaymentsBySeller(paymentEntities);
             }
-        });
+            if (custWallet.getPaymentsByCustomer() != null) {
+                List<PaymentEntity> custWalletPaymentsBySeller = new ArrayList<>(custWallet.getPaymentsBySeller());
+                custWalletPaymentsBySeller.add(paymentEntity);
+                custWallet.setPaymentsByCustomer(custWalletPaymentsBySeller);
+            } else {
+                ArrayList<PaymentEntity> paymentEntities = new ArrayList<>();
+                paymentEntities.add(paymentEntity);
+                custWallet.setPaymentsBySeller(paymentEntities);
+            }
+            dealRepository.save(deal);
+            endDate.setDealById(deal);
+            endDate.setState(false);
+            endDateRepository.save(endDate);
+            if (customer.getDealsById() != null) {
+                List<DealEntity> dealsById = new ArrayList<>(customer.getDealsById());
+                dealsById.add(deal);
+                customer.setDealsById(dealsById);
+            } else {
+                ArrayList<DealEntity> dealEntities = new ArrayList<>();
+                dealEntities.add(deal);
+                customer.setDealsById(dealEntities);
+            }
+        } else if (lot.getPolicy() != null)
+            endDate.setExpectingDate(Timestamp.valueOf(endDate.getExpectingDate().toLocalDateTime().plusDays(lot.getPolicy())));
+        else {
+            endDate.setState(false);
+            lot.setState("time expired");
+        }
     }
 }

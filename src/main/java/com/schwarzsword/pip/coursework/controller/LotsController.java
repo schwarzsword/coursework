@@ -40,12 +40,12 @@ public class LotsController {
         this.userService = userService;
     }
 
-    @RequestMapping("/available")
+    @RequestMapping(value = "/available", method = RequestMethod.GET)
     public ResponseEntity showAvailableLots() {
         return ResponseEntity.ok(jsonService.toJson(lotsService.findAvailableLots()));
     }
 
-    @RequestMapping("/expert")
+    @RequestMapping(value = "/expert", method = RequestMethod.GET)
     @Secured("ROLE_EXPERT")
     public ResponseEntity showToExpert() {
         return ResponseEntity.ok(jsonService.toJson(lotsService.findForExpert()));

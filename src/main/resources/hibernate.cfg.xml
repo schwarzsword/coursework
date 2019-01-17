@@ -1,26 +1,25 @@
-<?xml version='1.0' encoding='utf-8'?>
-<!DOCTYPE hibernate-configuration PUBLIC
-    "-//Hibernate/Hibernate Configuration DTD//EN"
-    "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
-<hibernate-configuration>
-  <session-factory>
-    <property name="connection.url">jdbc:postgresql://localhost:5432/s243884</property>
-    <property name="connection.driver_class">org.postgresql.Driver</property>
-      <mapping class="com.schwarzsword.pip.coursework.entity.CertificateEntity"/>
-      <mapping class="com.schwarzsword.pip.coursework.entity.DealEntity"/>
-      <mapping class="com.schwarzsword.pip.coursework.entity.EndDateEntity"/>
-      <mapping class="com.schwarzsword.pip.coursework.entity.LotEntity"/>
-      <mapping class="com.schwarzsword.pip.coursework.entity.PaintingEntity"/>
-      <mapping class="com.schwarzsword.pip.coursework.entity.PaymentEntity"/>
-      <mapping class="com.schwarzsword.pip.coursework.entity.PersistentLoginsEntity"/>
-      <mapping class="com.schwarzsword.pip.coursework.entity.RegistrationEntity"/>
-      <mapping class="com.schwarzsword.pip.coursework.entity.UsersEntity"/>
-      <mapping class="com.schwarzsword.pip.coursework.entity.WalletEntity"/>
-      <mapping class="com.schwarzsword.pip.coursework.entity.RolesEntity"/>
-      <!-- <property name="connection.username"/> -->
-    <!-- <property name="connection.password"/> -->
+<!--<?xml version='1.0' encoding='utf-8'?>-->
+<!--<!DOCTYPE hibernate-configuration PUBLIC-->
+    <!--"-//Hibernate/Hibernate Configuration DTD//EN"-->
+    <!--"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">-->
+<!--<hibernate-configuration>-->
+  <!--<session-factory>-->
+    <!--&lt;!&ndash;<property name="connection.url">jdbc:postgresql://localhost:5432/s243884</property>&ndash;&gt;-->
+    <!--<property name="connection.driver_class">org.postgresql.Driver</property>-->
+      <!--<mapping class="com.schwarzsword.pip.coursework.entity.CertificateEntity"/>-->
+      <!--<mapping class="com.schwarzsword.pip.coursework.entity.DealEntity"/>-->
+      <!--<mapping class="com.schwarzsword.pip.coursework.entity.EndDateEntity"/>-->
+      <!--<mapping class="com.schwarzsword.pip.coursework.entity.LotEntity"/>-->
+      <!--<mapping class="com.schwarzsword.pip.coursework.entity.PaintingEntity"/>-->
+      <!--<mapping class="com.schwarzsword.pip.coursework.entity.PaymentEntity"/>-->
+      <!--<mapping class="com.schwarzsword.pip.coursework.entity.PersistentLoginsEntity"/>-->
+      <!--<mapping class="com.schwarzsword.pip.coursework.entity.UsersEntity"/>-->
+      <!--<mapping class="com.schwarzsword.pip.coursework.entity.WalletEntity"/>-->
+      <!--<mapping class="com.schwarzsword.pip.coursework.entity.RolesEntity"/>-->
+      <!--&lt;!&ndash; <property name="connection.username"/> &ndash;&gt;-->
+    <!--&lt;!&ndash; <property name="connection.password"/> &ndash;&gt;-->
 
-    <!-- DB schema will be updated if needed -->
-    <!-- <property name="hbm2ddl.auto">update</property> -->
-  </session-factory>
-</hibernate-configuration>
+    <!--&lt;!&ndash; DB schema will be updated if needed &ndash;&gt;-->
+    <!--&lt;!&ndash; <property name="hbm2ddl.auto">update</property> &ndash;&gt;-->
+  <!--</session-factory>-->
+<!--</hibernate-configuration>-->
