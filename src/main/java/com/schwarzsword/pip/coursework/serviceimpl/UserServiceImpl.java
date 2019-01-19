@@ -52,6 +52,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public LotEntity doBet(LotEntity lot, Long value, UsersEntity user)
             throws LotAlreadySoldException, NotEnoughMoneyException, SelfBetException {
+
         WalletEntity wallet = user.getWalletById();
         Long balance = wallet.getBalance();
         if (balance < value) throw new NotEnoughMoneyException("На счету недостаточно средств");
@@ -60,7 +61,12 @@ public class UserServiceImpl implements UserService {
         if (lot.getStartPrice() >= value) throw new NotEnoughMoneyException("Ставку необходимо перебить");
         if (user.getId() == lot.getUsersBySeller().getId())
             throw new SelfBetException("Нельзя сделать ставку на свой лот");
-        wallet.setBalance(balance - value);
+        if (lot.getUsersByLastBet()!=null){
+            WalletEntity walletById = lot.getUsersByLastBet().getWalletById();
+            walletById.plus(lot.getStartPrice());
+            walletRepository.save(walletById);
+        }
+        wallet.minus(value);
         walletRepository.save(wallet);
         lot.setStartPrice(value);
         lot.setUsersByLastBet(user);

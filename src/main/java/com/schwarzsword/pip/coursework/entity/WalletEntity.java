@@ -35,4 +35,12 @@ public class WalletEntity {
         this.balance = 0L;
     }
 
+    public Long plus(Long val){
+        return this.balance+=val;
+    }
+
+    public Long minus(Long val){
+        return this.balance-=val;
+    }
+
 }

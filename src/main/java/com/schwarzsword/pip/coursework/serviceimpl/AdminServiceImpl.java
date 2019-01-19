@@ -6,6 +6,7 @@ import com.schwarzsword.pip.coursework.entity.UsersEntity;
 import com.schwarzsword.pip.coursework.entity.WalletEntity;
 import com.schwarzsword.pip.coursework.repository.*;
 import com.schwarzsword.pip.coursework.service.AdminService;
+import com.schwarzsword.pip.coursework.service.EmailService;
 import com.schwarzsword.pip.coursework.service.LotsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,18 +31,18 @@ public class AdminServiceImpl implements AdminService {
 
     private final UsersRepository usersRepository;
 
-//    final private EmailService emailService;
+   final private EmailService emailService;
 
     private final RolesRepository rolesRepository;
 
     @Autowired
-    public AdminServiceImpl(LotsService lotsService, EndDateRepository endDateRepository, LotRepository lotRepository, WalletRepository walletRepository, UsersRepository usersRepository, RolesRepository rolesRepository) {
+    public AdminServiceImpl(EmailService emailService, LotsService lotsService, EndDateRepository endDateRepository, LotRepository lotRepository, WalletRepository walletRepository, UsersRepository usersRepository, RolesRepository rolesRepository) {
         this.lotsService = lotsService;
         this.endDateRepository = endDateRepository;
         this.lotRepository = lotRepository;
         this.walletRepository = walletRepository;
         this.usersRepository = usersRepository;
-//        this.emailService = emailService;
+        this.emailService = emailService;
         this.rolesRepository = rolesRepository;
     }
 
@@ -55,10 +56,10 @@ public class AdminServiceImpl implements AdminService {
         lotRepository.save(lot);
         UsersEntity seller = lot.getUsersBySeller();
         UsersEntity customer = lot.getUsersByLastBet();
-//        emailService.sendSimpleMessage(seller.getMail(), "Удаление лота", "Ваш лот был удален с аукциона.\n" +
-//                " Возможно подозрение в мошенничестве. \n" +
-//                "Если вы считаете, что удаление необосновано, то можете написать в поддержку\n" +
-//                "С уважением, администрация интернет-аукциона.");
+        emailService.sendSimpleMessage(seller.getMail(), "Удаление лота", "Ваш лот был удален с аукциона.\n" +
+                " Возможно подозрение в мошенничестве. \n" +
+                "Если вы считаете, что удаление необосновано, то можете написать в поддержку\n" +
+                "С уважением, администрация интернет-аукциона.");
         if (!(customer == null)) {
             WalletEntity walletEntity = customer.getWalletById();
             walletEntity.setBalance(walletEntity.getBalance() + lot.getStartPrice());
@@ -71,10 +72,10 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public UsersEntity banUser(UsersEntity user) {
         addRole(user, "ROLE_BANNED");
-//        emailService.sendSimpleMessage(user.getMail(), "Блокировка пользователя", "Ваш аккаунт был заблокирован администрацией интернет-аукциона.\n" +
-//                "Возможно, была замечена подозрительная активность.\n" +
-//                "По всем вопросам вы можете обратиться в поддержкку\n" +
-//                "С уважением, администрация интернет-аукциона.");
+        emailService.sendSimpleMessage(user.getMail(), "Блокировка пользователя", "Ваш аккаунт был заблокирован администрацией интернет-аукциона.\n" +
+                "Возможно, была замечена подозрительная активность.\n" +
+                "По всем вопросам вы можете обратиться в поддержкку\n" +
+                "С уважением, администрация интернет-аукциона.");
         return user;
     }
 
@@ -82,9 +83,9 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public UsersEntity unbanUser(UsersEntity user) {
         removeRole(user, "ROLE_BANNED");
-//        emailService.sendSimpleMessage(user.getMail(), "Разблокировка пользователя", "Ваш аккаунт был разблокирован администрацией " +
-//                "интернет-аукциона после вашего обращения.\n" +
-//                "Приносим свои извенения за временные неудобства.");
+        emailService.sendSimpleMessage(user.getMail(), "Разблокировка пользователя", "Ваш аккаунт был разблокирован администрацией " +
+                "интернет-аукциона после вашего обращения.\n" +
+                "Приносим свои извенения за временные неудобства.");
         return user;
     }
 

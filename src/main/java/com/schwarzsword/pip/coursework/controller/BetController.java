@@ -33,17 +33,17 @@ public class BetController {
 
     @MessageMapping("/bet")
     @SendTo("/topic/price")
-    public String doBet(String priceStr, String lotId, @AuthenticationPrincipal User user){
+    public LotEntity doBet(String priceStr, String lotId, @AuthenticationPrincipal User user){
         Long price = Long.parseLong(priceStr);
-        UsersEntity user1 = registrationService.getUserByUsername(user.getUsername());
+        UsersEntity lastBuyer = registrationService.getUserByUsername(user.getUsername());
+
         LotEntity lot = lotsService.findLotById(lotId);
-        LotEntity lotEntity;
         try {
-             lotEntity = userService.doBet(lot, price, user1);
+             lot = userService.doBet(lot, price, lastBuyer);
         } catch (SelfBetException | NotEnoughMoneyException | LotAlreadySoldException e) {
-           return e.getMessage();
+           return null;
         }
-        return lotEntity.getStartPrice().toString();
+        return lot;
     }
 
 }
