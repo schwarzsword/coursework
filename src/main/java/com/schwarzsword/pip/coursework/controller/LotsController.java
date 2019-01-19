@@ -77,9 +77,15 @@ public class LotsController {
 
     @RequestMapping(value = "/bought", method = RequestMethod.GET)
     @Secured({"ROLE_USER", "ROLE_ADMIN"})
-    public ResponseEntity showBought(@AuthenticationPrincipal User user) {
+    public ResponseEntity showOwned(@AuthenticationPrincipal User user) {
         UsersEntity usersEntity = registrationService.getUserByUsername(user.getUsername());
         return ResponseEntity.ok(jsonService.toJson(lotsService.findOwnedPaintings(usersEntity)));
+    }
+    @RequestMapping(value = "/owned", method = RequestMethod.GET)
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
+    public ResponseEntity showBought(@AuthenticationPrincipal User user) {
+        UsersEntity usersEntity = registrationService.getUserByUsername(user.getUsername());
+        return ResponseEntity.ok(jsonService.toJson(lotsService.findBoughtLots(usersEntity)));
     }
 
     @RequestMapping(value = "/similarAuthor", method = RequestMethod.GET)

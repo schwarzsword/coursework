@@ -56,15 +56,27 @@ public class LotsServiceImpl implements LotsService {
 
     @Override
     public List<PaintingEntity> findOwnedPaintings(UsersEntity user) {
+        List<PaintingEntity> selling = findAvailableLots()
+                .stream()
+                .map(LotEntity::getPaintingByPainting)
+                .collect(Collectors.toList());
+        return user.getDealsById()
+                .stream()
+                .map(DealEntity::getEndDateBySoldDate)
+                .map(EndDateEntity::getLotByLot)
+                .map(LotEntity::getPaintingByPainting)
+                .filter( paintingEntity -> !selling.contains(paintingEntity))
+                .collect(Collectors.toList());
+    }
 
+    @Override
+    public List<LotEntity> findBoughtLots(UsersEntity user) {
         return user.getDealsById()
                 .stream()
                 .map(
                         DealEntity::getEndDateBySoldDate)
                 .map(
                         EndDateEntity::getLotByLot
-                ).map(
-                        LotEntity::getPaintingByPainting
                 )
                 .collect(Collectors.toList());
     }
