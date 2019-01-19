@@ -13,7 +13,7 @@ public interface LotsService {
 
     LotEntity findLotById(String lotId) throws NoSuchElementException;
 
-    List<LotEntity> findOwnedLotsByCustomersUser(UsersEntity user);
+    List<PaintingEntity> findOwnedPaintings(UsersEntity user);
 
     List<LotEntity> findSoldLotsBySellersUser(UsersEntity user);
 
