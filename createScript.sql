@@ -2,7 +2,7 @@ create table users (
   id       serial primary key,
   name     varchar(50)         not null,
   surname  varchar(50)         not null,
-  username varchar(30) unique  not null,
+  username varchar(255) unique  not null,
   password varchar(100)        not null,
   mail     varchar(255) unique not null
 );

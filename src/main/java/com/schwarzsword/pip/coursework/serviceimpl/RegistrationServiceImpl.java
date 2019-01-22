@@ -75,11 +75,11 @@ public class RegistrationServiceImpl implements RegistrationService {
         } else throw new UsernameNotFoundException("Пользователь с данным именем не найден");
     }
 
+    @Transactional
     @Override
     public UsersEntity authentication(String mail, String name, String surname) {
-        return usersRepository.findByUsername(mail).orElseGet(
-                () -> new UsersEntity(name, surname, "", mail, rolesRepository.getByRole("ROLE_USER"))
-        );
+        final Optional<UsersEntity> byUsername = usersRepository.findByUsername(mail);
+        return byUsername.orElseGet(() -> signUp(name, surname, "", mail));
     }
 
 }

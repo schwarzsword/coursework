@@ -55,8 +55,9 @@ public class GoogleOauthFilter extends AbstractAuthenticationProcessingFilter {
                 Map<String, String> authInfo = new ObjectMapper().readValue(token.getClaims(), Map.class);
 
                 String email = authInfo.get("email");
-                String name = authInfo.get("given_name");
-                String surname = authInfo.get("family_name");
+                String name = authInfo.getOrDefault("given_name", "Secret");
+                String surname = authInfo.getOrDefault("family_name", "Anonymous");
+
 
                 UsersEntity usersEntity = registrationService.authentication(email, name, surname);
 
