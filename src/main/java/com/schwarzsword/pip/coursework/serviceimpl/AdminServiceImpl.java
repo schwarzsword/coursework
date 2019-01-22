@@ -115,4 +115,20 @@ public class AdminServiceImpl implements AdminService {
         return walletEntity;
     }
 
+
+    @Override
+    public List<UsersEntity> showNormal() {
+        List<UsersEntity> users =  usersRepository.findAllByRoles(rolesRepository.getByRole("ROLE_USER"));
+        List<UsersEntity> expert =  usersRepository.findAllByRoles(rolesRepository.getByRole("ROLE_EXPERT"));
+        List<UsersEntity> admins =  usersRepository.findAllByRoles(rolesRepository.getByRole("ROLE_ADMIN"));
+        for (UsersEntity x : expert){
+            if (!users.contains(x))
+                users.add(x);
+        }
+
+        for (UsersEntity x : admins){
+                users.remove(x);
+        }
+        return users;
+    }
 }

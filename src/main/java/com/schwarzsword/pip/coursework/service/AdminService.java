@@ -20,5 +20,7 @@ public interface AdminService {
 
     List<UsersEntity> showBanned();
 
+    List<UsersEntity> showNormal();
+
     WalletEntity addMoney(Long value, UsersEntity user);
 }
