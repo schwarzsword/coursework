@@ -31,14 +31,6 @@ public class UserServiceImpl implements UserService {
         this.lotRepository = lotRepository;
     }
 
-    @Transactional
-    @Override
-    public WalletEntity addMoney(Long value, UsersEntity user) {
-        WalletEntity walletEntity = user.getWalletById();
-        walletEntity.setBalance(walletEntity.getBalance() + value);
-        walletRepository.save(walletEntity);
-        return walletEntity;
-    }
 
     @Transactional
     @Override

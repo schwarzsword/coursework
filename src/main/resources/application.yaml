@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/s243884
     username: s243884
-    password: qwe
+    password: qwertyui
     driver-class-name: org.postgresql.Driver
     initialization-mode: always
   jpa:
@@ -11,21 +11,39 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQL95Dialect
         ddl-auto: update
     generate-ddl: true
-
+  mail:
+    username: courseworknotification@gmail.com
+    password: BeanFactoryPostProcessor
+    host: smtp.gmail.com
+    port: 587
+    protocol: smtp
+    test-connection: true
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
 security:
   oauth2:
     client:
-      clientId: 233668646673605
-      clientSecret: 33b17e044ee6a4fa383f46ec6e28ea1d
-      accessTokenUri: https://graph.facebook.com/oauth/access_token
-      userAuthorizationUri: https://www.facebook.com/dialog/oauth
-      tokenName: oauth_token
-      authenticationScheme: query
+      clientId: 842951186062-0iro1ed7cv5jv0i7giaqobrk865vf0ie.apps.googleusercontent.com
+      clientSecret: YhFhqj9shOf5GjnHmdYLODxS
+      accessTokenUri: https://www.googleapis.com/oauth2/v3/token
+      userAuthorizationUri: https://accounts.google.com/o/oauth2/v2/auth
+      scope: openid, email, profile
       clientAuthenticationScheme: form
+      registered-redirect-uri: http://localhost:10880/login/google, http://localhost:8080/login/google
     resource:
-      userInfoUri: https://graph.facebook.com/me
+      userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
+      prefer-token-info: true
+
 
 server:
   port: 10880
+upload:
+  path: /home/s243884/course/img
 
-log
+#   jdbc:postgresql://pg:5432/studs
+#   jdbc:postgresql://localhost:5432/s243884
+#   jdbc:postgresql://localhost:5432/s243884 droplet

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.List;
 
 public interface UserService {
-    WalletEntity addMoney(Long value, UsersEntity user);
 
     PaintingEntity downloadPainting(
             String name, String author, String description, String img, String genre, String technique);

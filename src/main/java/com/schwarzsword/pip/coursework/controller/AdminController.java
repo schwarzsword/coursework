@@ -1,6 +1,7 @@
 package com.schwarzsword.pip.coursework.controller;
 
 import com.schwarzsword.pip.coursework.entity.UsersEntity;
+import com.schwarzsword.pip.coursework.entity.WalletEntity;
 import com.schwarzsword.pip.coursework.service.AdminService;
 import com.schwarzsword.pip.coursework.service.JsonService;
 import com.schwarzsword.pip.coursework.service.RegistrationService;
@@ -95,6 +96,15 @@ public class AdminController {
     @RequestMapping(value = "/banned", method = RequestMethod.GET)
     public ResponseEntity showBanned() {
         return ResponseEntity.ok(jsonService.toJson(adminService.showBanned()));
+    }
+
+    @Secured("ROLE_ADMIN")
+    @RequestMapping(value = "/money", method = RequestMethod.GET)
+    public ResponseEntity addMoney(String username, String value){
+        UsersEntity user = registrationService.getUserByUsername(username);
+        Long parseLong = Long.parseLong(value);
+        WalletEntity wallet = adminService.addMoney(parseLong, user);
+        return ResponseEntity.ok(jsonService.toJson(wallet.getBalance()));
     }
 
 }

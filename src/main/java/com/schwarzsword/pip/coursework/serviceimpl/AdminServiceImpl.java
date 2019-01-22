@@ -105,4 +105,14 @@ public class AdminServiceImpl implements AdminService {
     public List<UsersEntity> showBanned() {
         return usersRepository.findAllByRoles(rolesRepository.getByRole("ROLE_BANNED"));
     }
+
+    @Transactional
+    @Override
+    public WalletEntity addMoney(Long value, UsersEntity user) {
+        WalletEntity walletEntity = user.getWalletById();
+        walletEntity.setBalance(walletEntity.getBalance() + value);
+        walletRepository.save(walletEntity);
+        return walletEntity;
+    }
+
 }
