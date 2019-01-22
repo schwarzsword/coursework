@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -104,5 +105,21 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<UsersEntity> showBanned() {
         return usersRepository.findAllByRoles(rolesRepository.getByRole("ROLE_BANNED"));
+    }
+
+    @Override
+    public List<UsersEntity> showNormal() {
+        List<UsersEntity> users =  usersRepository.findAllByRoles(rolesRepository.getByRole("ROLE_USER"));
+        List<UsersEntity> expert =  usersRepository.findAllByRoles(rolesRepository.getByRole("ROLE_EXPERT"));
+        List<UsersEntity> admins =  usersRepository.findAllByRoles(rolesRepository.getByRole("ROLE_ADMIN"));
+        for (UsersEntity x : expert){
+            if (!users.contains(x))
+                users.add(x);
+        }
+
+        for (UsersEntity x : admins){
+                users.remove(x);
+        }
+        return users;
     }
 }

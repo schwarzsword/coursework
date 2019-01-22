@@ -97,4 +97,10 @@ public class AdminController {
         return ResponseEntity.ok(jsonService.toJson(adminService.showBanned()));
     }
 
+    @Secured("ROLE_ADMIN")
+    @RequestMapping(value = "/normal", method = RequestMethod.GET)
+    public ResponseEntity showNormal() {
+        return ResponseEntity.ok(jsonService.toJson(adminService.showNormal()));
+    }
+
 }

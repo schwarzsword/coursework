@@ -18,4 +18,6 @@ public interface AdminService {
     UsersEntity removeRole(UsersEntity user, String role);
 
     List<UsersEntity> showBanned();
+
+    List<UsersEntity> showNormal();
 }
