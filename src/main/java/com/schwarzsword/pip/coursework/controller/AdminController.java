@@ -48,8 +48,8 @@ public class AdminController {
     @RequestMapping(value = "/ban", method = RequestMethod.GET)
     public ResponseEntity ban(@RequestParam String username) {
         try {
-            final UsersEntity user = registrationService.getUserByUsername(username);
-            final UsersEntity banUser = adminService.banUser(user);
+             UsersEntity user = registrationService.getUserByUsername(username);
+             UsersEntity banUser = adminService.banUser(user);
             return ResponseEntity.ok(jsonService.toJson(banUser));
         } catch (UsernameNotFoundException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
@@ -60,8 +60,8 @@ public class AdminController {
     @RequestMapping(value = "/unban", method = RequestMethod.GET)
     public ResponseEntity unBan(@RequestParam String username) {
         try {
-            final UsersEntity user = registrationService.getUserByUsername(username);
-            final UsersEntity unbanUser = adminService.unbanUser(user);
+             UsersEntity user = registrationService.getUserByUsername(username);
+             UsersEntity unbanUser = adminService.unbanUser(user);
             return ResponseEntity.ok(jsonService.toJson(unbanUser));
         } catch (UsernameNotFoundException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
@@ -72,8 +72,8 @@ public class AdminController {
     @RequestMapping(value = "/addrole", method = RequestMethod.GET)
     public ResponseEntity addRole(@RequestParam String username, @RequestParam String role) {
         try {
-            final UsersEntity user = registrationService.getUserByUsername(username);
-            final UsersEntity usersEntity = adminService.addRole(user, role);
+             UsersEntity user = registrationService.getUserByUsername(username);
+             UsersEntity usersEntity = adminService.addRole(user, role);
             return ResponseEntity.ok(jsonService.toJson(usersEntity));
         } catch (UsernameNotFoundException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
@@ -84,8 +84,8 @@ public class AdminController {
     @RequestMapping(value = "/deleterole", method = RequestMethod.GET)
     public ResponseEntity deleteRole(@RequestParam String username, @RequestParam String role) {
         try {
-        final UsersEntity user = registrationService.getUserByUsername(username);
-        final UsersEntity usersEntity = adminService.removeRole(user, role);
+         UsersEntity user = registrationService.getUserByUsername(username);
+         UsersEntity usersEntity = adminService.removeRole(user, role);
         return ResponseEntity.ok(jsonService.toJson(usersEntity));
         } catch (UsernameNotFoundException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());

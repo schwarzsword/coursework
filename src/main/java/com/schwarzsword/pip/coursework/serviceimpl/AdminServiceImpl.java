@@ -31,7 +31,7 @@ public class AdminServiceImpl implements AdminService {
 
     private final UsersRepository usersRepository;
 
-   final private EmailService emailService;
+    final private EmailService emailService;
 
     private final RolesRepository rolesRepository;
 
@@ -89,16 +89,18 @@ public class AdminServiceImpl implements AdminService {
         return user;
     }
 
+    @Transactional
     @Override
     public UsersEntity addRole(UsersEntity user, String role) {
         user.addRole(rolesRepository.getByRole(role));
-        return user;
+        return usersRepository.save(user);
     }
 
+    @Transactional
     @Override
     public UsersEntity removeRole(UsersEntity user, String role) {
         user.removeRole(rolesRepository.getByRole(role));
-        return user;
+        return usersRepository.save(user);
     }
 
     @Override
@@ -118,16 +120,16 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<UsersEntity> showNormal() {
-        List<UsersEntity> users =  usersRepository.findAllByRoles(rolesRepository.getByRole("ROLE_USER"));
-        List<UsersEntity> expert =  usersRepository.findAllByRoles(rolesRepository.getByRole("ROLE_EXPERT"));
-        List<UsersEntity> admins =  usersRepository.findAllByRoles(rolesRepository.getByRole("ROLE_ADMIN"));
-        for (UsersEntity x : expert){
+        List<UsersEntity> users = usersRepository.findAllByRoles(rolesRepository.getByRole("ROLE_USER"));
+        List<UsersEntity> expert = usersRepository.findAllByRoles(rolesRepository.getByRole("ROLE_EXPERT"));
+        List<UsersEntity> admins = usersRepository.findAllByRoles(rolesRepository.getByRole("ROLE_ADMIN"));
+        for (UsersEntity x : expert) {
             if (!users.contains(x))
                 users.add(x);
         }
 
-        for (UsersEntity x : admins){
-                users.remove(x);
+        for (UsersEntity x : admins) {
+            users.remove(x);
         }
         return users;
     }
